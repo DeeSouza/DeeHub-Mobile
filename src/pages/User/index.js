@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { WebView } from 'react-native-webview';
 import ShimmerPlaceHolder from 'react-native-shimmer-placeholder';
 import api from '../../services/api';
 
@@ -71,6 +72,12 @@ export default class User extends Component {
     }
   };
 
+  handleRepository = repo => {
+    const { navigation } = this.props;
+
+    navigation.navigate('Repository', { repo });
+  };
+
   render() {
     const { stars, visible, visibleList, refreshing } = this.state;
     const { navigation } = this.props;
@@ -136,7 +143,9 @@ export default class User extends Component {
               <Starred>
                 <OwnerAvatar source={{ uri: item.owner.avatar_url }} />
                 <Info>
-                  <Title>{item.name}</Title>
+                  <Title onPress={() => this.handleRepository(item)}>
+                    {item.name}
+                  </Title>
                   <Author>{item.owner.login}</Author>
                 </Info>
               </Starred>
@@ -151,5 +160,6 @@ export default class User extends Component {
 User.propTypes = {
   navigation: PropTypes.shape({
     getParam: PropTypes.func,
+    navigate: PropTypes.func,
   }).isRequired,
 };
