@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Keyboard, ActivityIndicator } from 'react-native';
+import { Keyboard, ActivityIndicator, ToastAndroid } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import PropTypes from 'prop-types';
@@ -14,8 +14,12 @@ import {
   Avatar,
   Bio,
   Name,
+  Buttons,
   ProfileButton,
   ProfileButtonText,
+  ProfileButtonDelete,
+  ProfileButtonDeleteText,
+  NoUsers,
 } from './styles';
 
 export default class Main extends Component {
@@ -49,29 +53,49 @@ export default class Main extends Component {
 
     this.setState({ loading: true });
 
-    const response = await api.get(`/users/${newUser}`);
+    try {
+      const response = await api.get(`/users/${newUser}`);
 
-    const data = {
-      name: response.data.name,
-      login: response.data.login,
-      bio: response.data.bio,
-      avatar_url: response.data.avatar_url,
-    };
+      const data = {
+        name: response.data.name,
+        login: response.data.login,
+        bio: response.data.bio,
+        avatar_url: response.data.avatar_url,
+      };
 
-    this.setState({
-      users: [...users, data],
-      newUser: '',
-    });
+      this.setState({
+        users: [...users, data],
+        newUser: '',
+      });
 
-    Keyboard.dismiss();
+      Keyboard.dismiss();
 
-    this.setState({ loading: false });
+      this.setState({ loading: false });
+    } catch (err) {
+      this.setState({ loading: false });
+    }
   };
 
   handleNavigate = user => {
     const { navigation } = this.props;
 
     navigation.navigate('User', { user });
+  };
+
+  handleDelete = user => {
+    const { users } = this.state;
+
+    const newList = users.filter(item => item.login !== user.login);
+
+    this.setState({ users: newList });
+
+    ToastAndroid.showWithGravityAndOffset(
+      'O usuário foi removido',
+      ToastAndroid.SHORT,
+      ToastAndroid.BOTTOM,
+      0,
+      60
+    );
   };
 
   render() {
@@ -99,6 +123,10 @@ export default class Main extends Component {
           </SubmitButton>
         </Form>
 
+        {!users.length > 0 && (
+          <NoUsers>Você ainda não adicionou usuários.</NoUsers>
+        )}
+
         <List
           data={users}
           keyExtractor={user => user.login}
@@ -108,9 +136,15 @@ export default class Main extends Component {
               <Name>{item.name}</Name>
               <Bio>{item.bio}</Bio>
 
-              <ProfileButton onPress={() => this.handleNavigate(item)}>
-                <ProfileButtonText>Ver Perfil</ProfileButtonText>
-              </ProfileButton>
+              <Buttons>
+                <ProfileButton onPress={() => this.handleNavigate(item)}>
+                  <ProfileButtonText>Ver Perfil</ProfileButtonText>
+                </ProfileButton>
+
+                <ProfileButtonDelete onPress={() => this.handleDelete(item)}>
+                  <ProfileButtonDeleteText>Remover</ProfileButtonDeleteText>
+                </ProfileButtonDelete>
+              </Buttons>
             </User>
           )}
         />

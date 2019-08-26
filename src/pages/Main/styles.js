@@ -71,13 +71,19 @@ export const Name = styled.Text`
   text-align: center;
 `;
 
+export const Buttons = styled.View`
+  justify-content: space-between;
+  flex-direction: row;
+`;
+
 export const ProfileButton = styled(RectButton)`
   margin-top: 10px;
-  align-self: stretch;
+  margin-right: 10px;
   border-radius: 4px;
   background: #7159c1;
   justify-content: center;
   align-items: center;
+  padding: 0px 10px;
   height: 36px;
 `;
 
@@ -86,4 +92,29 @@ export const ProfileButtonText = styled.Text`
   font-weight: bold;
   color: #fff;
   text-transform: uppercase;
+`;
+
+export const ProfileButtonDelete = styled(RectButton)`
+  margin-top: 10px;
+  border-radius: 4px;
+  background: #f00;
+  justify-content: center;
+  align-items: center;
+  padding: 0px 10px;
+  height: 36px;
+`;
+
+export const ProfileButtonDeleteText = styled.Text`
+  font-size: 14px;
+  font-weight: bold;
+  color: #fff;
+  text-transform: uppercase;
+`;
+
+export const NoUsers = styled.Text`
+  font-size: 14px;
+  font-weight: bold;
+  color: #f00;
+  margin-top: 10px;
+  text-align: center;
 `;

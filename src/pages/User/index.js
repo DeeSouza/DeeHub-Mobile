@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
+import { ToastAndroid } from 'react-native';
 import PropTypes from 'prop-types';
-import { WebView } from 'react-native-webview';
 import ShimmerPlaceHolder from 'react-native-shimmer-placeholder';
 import api from '../../services/api';
 
@@ -18,6 +18,22 @@ import {
   OwnerAvatar,
 } from './styles';
 
+const Toast = ({ visible }) => {
+  if (!visible) {
+    ToastAndroid.showWithGravityAndOffset(
+      'Aguarde...',
+      ToastAndroid.LONG,
+      ToastAndroid.BOTTOM,
+      25,
+      50
+    );
+
+    return null;
+  }
+
+  return null;
+};
+
 export default class User extends Component {
   static navigationOptions = ({ navigation }) => ({
     title: navigation.getParam('user').name,
@@ -27,6 +43,7 @@ export default class User extends Component {
     stars: [],
     visible: false,
     visibleList: false,
+    visibleMore: false,
     page: 0,
     user: '',
     refreshing: false,
@@ -56,6 +73,8 @@ export default class User extends Component {
   loadFavorites = async () => {
     const { page, stars, user } = this.state;
 
+    this.setState({ visibleMore: true });
+
     const response = await api.get(`/users/${user.login}/starred`, {
       params: { page: page + 1 },
     });
@@ -67,6 +86,7 @@ export default class User extends Component {
         stars: [...stars, ...response.data],
         visible: true,
         visibleList: true,
+        visibleMore: false,
         refreshing: false,
       });
     }
@@ -79,7 +99,7 @@ export default class User extends Component {
   };
 
   render() {
-    const { stars, visible, visibleList, refreshing } = this.state;
+    const { stars, visible, visibleList, refreshing, visibleMore } = this.state;
     const { navigation } = this.props;
     const user = navigation.getParam('user');
 
@@ -136,7 +156,7 @@ export default class User extends Component {
             data={stars}
             onRefresh={this.refreshList}
             refreshing={refreshing}
-            onEndReachedThreshold={0.1}
+            onEndReachedThreshold={0.2}
             onEndReached={this.loadFavorites}
             keyExtractor={star => String(star.id)}
             renderItem={({ item }) => (
@@ -152,6 +172,8 @@ export default class User extends Component {
             )}
           />
         </ShimmerPlaceHolder>
+
+        <Toast visible={visibleMore} />
       </Container>
     );
   }
