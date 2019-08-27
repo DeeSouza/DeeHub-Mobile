@@ -112,7 +112,7 @@ export const ProfileButtonDeleteText = styled.Text`
 `;
 
 export const NoUsers = styled.Text`
-  font-size: 14px;
+  font-size: 16px;
   font-weight: bold;
   color: #f00;
   margin-top: 10px;
